@@ -12,6 +12,7 @@ namespace Model
     {
         public bool IsFlagged { get; set; }
         public bool HasBomb { get; internal set; }
+        public bool HasBeenDug { get; set; }
     }
 
     public class MinesweeperModel
@@ -64,7 +65,9 @@ namespace Model
             switch (type)
             {
                 case MoveType.Dig:
-                    return CheckSurroundingCellsForBombs(location);
+                    int row = location.Y, col = location.X;
+                    mBoard[row, col].HasBeenDug = true;
+                    return CheckSurroundingCellsForBombs(row, col);
                 case MoveType.Flag:
                     return SetFlag(location);
                 default:
@@ -72,11 +75,8 @@ namespace Model
             }
         }
 
-
-        private string CheckSurroundingCellsForBombs(Point location)
+        private string CheckSurroundingCellsForBombs(int row, int col)
         {
-            int row = location.Y;
-            int col = location.X;
             int numOfSurroundingBombs = 0;
 
             if (mBoard[row, col].IsFlagged) { return "FLAG"; }
@@ -92,7 +92,7 @@ namespace Model
             }
 
             numOfUntouchedCells--;
-            return (numOfSurroundingBombs == 0) ? "" : numOfSurroundingBombs.ToString();
+            return (numOfSurroundingBombs == 0) ? "0" : numOfSurroundingBombs.ToString();
         }
 
         private string SetFlag(Point location)
@@ -135,6 +135,11 @@ namespace Model
         private void ResetGameStatus()
         {
             GameStatus = "In progress...";
+        }
+
+        public Cell GetBoardCell(int row, int col)
+        {
+            return mBoard[row, col];
         }
     }
 }

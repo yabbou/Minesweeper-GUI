@@ -11,19 +11,19 @@ namespace Minesweeper
         public int RowCount { get; set; }
         public int ColCount { get; set; }
         public double Percent { get; set; }
+
+        private System.Windows.Forms.Button[,] buttons;
         public MinesweeperModel Model { get; set; }
 
         public Minesweeper(int rowCount = 10, int colCount = 8, double percent = 0.10)
         {
             RowCount = rowCount;
             ColCount = colCount;
-            Percent = percent; 
+            Percent = percent;
 
             Model = new MinesweeperModel(rowCount, colCount, percent);
             InitializeComponent2();
         }
-
-        private System.Windows.Forms.Button[,] buttons;
 
         private void InitializeComponent2()
         {
@@ -63,7 +63,7 @@ namespace Minesweeper
                 for (int col = 0; col < ColCount; col++)
                 {
                     var b = buttons[row, col] = new Button();
-                    b.BackColor = Color.GreenYellow; 
+                    b.BackColor = Color.GreenYellow;
                 }
             }
         }
@@ -82,7 +82,7 @@ namespace Minesweeper
 
                     b.MouseClick += Mouse_Left_Click;
                     b.MouseHover += Mouse_Hover;
-                } 
+                }
             }
         }
         private void SetUpBoard()
@@ -101,19 +101,50 @@ namespace Minesweeper
             var b = sender as System.Windows.Forms.Button;
             CheckSenderIsButton(sender, b);
 
-            Point location = (Point)b.Tag;
-            b.Enabled = b.Text.Equals("FLAG");
-            b.Text = Model.MakeMove(MoveType.Dig, location);
-            b.BackColor = SetDigCellColor(b);
-
+            CheckSurroundingButtonsForBombs(b);
             CheckGameStatus();
         }
 
-        private static Color SetDigCellColor(Button b)
+        private void CheckSurroundingButtonsForBombs(Button b) //here?
+        {
+            Point location = (Point)b.Tag;
+            int row = location.Y;
+            int col = location.X;
+
+            string totalSurroundingBombs = Model.MakeMove(MoveType.Dig, location);
+            if (totalSurroundingBombs.Equals("0"))
+            {
+                for (int r = Math.Max(0, row - 1); r <= Math.Min(row + 1, RowCount - 1); r++)
+                {
+                    for (int c = Math.Max(0, col - 1); c <= Math.Min(col + 1, ColCount - 1); c++)
+                    {
+                        var cell = Model.GetBoardCell(r, c);
+
+                        if (!cell.HasBomb && !cell.HasBeenDug)
+                        {
+                            var button = buttons[r, c];
+                            button.Text = Model.MakeMove(MoveType.Dig, (Point)button.Tag);
+                            EditButtonState(b);
+
+                            CheckSurroundingButtonsForBombs(button);
+                        }
+                    }
+                }
+            }
+            EditButtonState(b);
+        }
+
+        private void EditButtonState(Button b)
+        {
+            b.Enabled = b.Text.Equals("FLAG");
+            b.BackColor = SetButtonColor(b);
+        }
+
+        private static Color SetButtonColor(Button b)
         {
             if (b.Text.Equals("BOMB!")) return Color.Red;
             else if (b.Text.Equals("FLAG")) return Color.Orange;
-            else if (b.Text.Equals("")) return Color.GreenYellow;
+            //else if (b.Text.Equals("")) return Color.GreenYellow;
             else return Color.Beige;
         }
 
