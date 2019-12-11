@@ -1,4 +1,6 @@
-﻿namespace Minesweeper
+﻿using System.Windows.Forms;
+
+namespace Minesweeper
 {
     partial class Minesweeper
     {
@@ -99,7 +101,8 @@
 
         #endregion
 
-        private System.Windows.Forms.TableLayoutPanel board;
+        //private TableLayoutPanel board;
+        //private ComboBox dropdoxMenu;
     }
 }
 

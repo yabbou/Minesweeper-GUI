@@ -47,9 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Minesweeper.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Minesweeper.cs" />
     <Compile Include="Minesweeper.Designer.cs">
       <DependentUpon>Minesweeper.cs</DependentUpon>
     </Compile>
